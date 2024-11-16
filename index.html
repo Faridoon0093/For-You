@@ -4,14 +4,94 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I Love You animation Using HTML and CSS</title>
+    <title>I Love You Animation Using HTML and CSS</title>
     <link rel="stylesheet" href="love.css">
+    <style>
+        /* Make canvas responsive */
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars from showing */
+            background: #000;
+        }
+
+        canvas {
+            display: block; /* Removes unwanted gaps */
+            width: 100%; /* Canvas adjusts to full width of the screen */
+            height: 100vh; /* Full screen height */
+        }
+    </style>
 </head>
 <body>
- <canvas id="canvas" width="1400" height="600">
-</canvas>
+    <canvas id="canvas">
+        Your browser does not support the canvas element.
+    </canvas>
 
-<!-- js here -->
-    <script src="love.js"></script>
+    <!-- JavaScript here -->
+    <script>
+        // Responsive canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth; // Full width of the viewport
+            canvas.height = window.innerHeight; // Full height of the viewport
+        }
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', resizeCanvas);
+
+        // Initialize canvas size
+        resizeCanvas();
+
+        // Example: Add animation logic (heart animation example)
+        let hearts = [];
+        class Heart {
+            constructor(x, y, size, speed) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.speed = speed;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(-Math.PI / 4);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(-this.size / 2, -this.size / 2, this.size / 2, 0, Math.PI, true);
+                ctx.arc(this.size / 2, -this.size / 2, this.size / 2, 0, Math.PI, true);
+                ctx.lineTo(0, this.size);
+                ctx.closePath();
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.y -= this.speed;
+            }
+        }
+
+        function addHeart() {
+            hearts.push(new Heart(Math.random() * canvas.width, canvas.height, 20 + Math.random() * 20, 1 + Math.random() * 2));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach((heart, i) => {
+                heart.update();
+                heart.draw();
+
+                // Remove hearts that move off-screen
+                if (heart.y < -50) hearts.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        // Generate hearts periodically
+        setInterval(addHeart, 200);
+        animate();
+    </script>
 </body>
 </html>
